@@ -1,0 +1,18 @@
+# Backend
+backened/.env
+backened/__pycache__/
+backened/**/__pycache__/
+backened/*.pyc
+backened/venv/
+backened/.venv/
+
+# Frontend
+frontened/node_modules/
+frontened/.env
+frontened/.env.local
+frontened/dist/
+frontened/build/
+
+# General
+.DS_Store
+*.log
