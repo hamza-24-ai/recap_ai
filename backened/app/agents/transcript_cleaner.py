@@ -3,6 +3,10 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 import os
 
+# Implement WebSocket 
+from app.core.websocket_manager import manager
+import asyncio
+
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -16,6 +20,11 @@ llm = ChatGroq(
 )
 
 def clean_transcript(state : AgentPipeline) -> AgentPipeline:
+
+    meeting_id = state["meeting_id"]
+
+    # Status bhejo (sync function ke andar async call — asyncio.run use karo)
+    asyncio.run(manager.send_status(meeting_id, "cleaning_transcript"))
 
     raw = state["raw_transcript"]
 

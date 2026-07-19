@@ -5,8 +5,16 @@ from app.models.action_item import ActionItem
 from app.models.meeting import Meeting
 from datetime import datetime
 
+# Implement WebSocket
+from app.core.websocket_manager import manager
+import asyncio
+
 
 def save_to_memory(state: AgentPipeline) -> AgentPipeline:
+
+    meeting_id = state["meeting_id"]
+    asyncio.run(manager.send_status(meeting_id, "saving_data"))
+    
     db = Session_Local()
 
     try:

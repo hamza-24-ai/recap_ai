@@ -3,7 +3,7 @@ from app.core.database import Base,engine
 from fastapi.security import OAuth2PasswordBearer
 
 # Import all Routers
-from app.routers import auth,meeting, project, decision, action_item
+from app.routers import auth,meeting, project, decision, action_item,websocket
 
 
 # Import all models 
@@ -27,6 +27,7 @@ app.include_router(project.router)
 app.include_router(meeting.router)
 app.include_router(decision.router)
 app.include_router(action_item.router)
+app.include_router(websocket.router)
 
 
 

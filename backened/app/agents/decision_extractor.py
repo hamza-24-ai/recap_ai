@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 import os
 import json
 
+# Implement WebSocket
+from app.core.websocket_manager import manager
+import asyncio
+
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -17,6 +21,10 @@ llm = ChatGroq(
 )
 
 def extract_decisions(state : AgentPipeline) -> AgentPipeline:
+
+    meeting_id = state["meeting_id"]
+    asyncio.run(manager.send_status(meeting_id, "extracting_decisions"))
+
     raw_text = state["cleaned_transcript"]
 
     prompt = f"""You are a meeting analysis assistant.

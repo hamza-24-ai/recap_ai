@@ -8,6 +8,11 @@ import os
 from datetime import datetime
 import json
 
+# Implement WebSocklet
+
+from app.core.websocket_manager import manager
+import asyncio
+
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -22,6 +27,10 @@ llm = ChatGroq(
 
 
 def check_followups(state: AgentPipeline) -> AgentPipeline:
+
+    meeting_id = state["meeting_id"]
+    asyncio.run(manager.send_status(meeting_id, "checking_followups"))
+
     db = Session_Local()
 
     try:
@@ -115,5 +124,7 @@ def check_followups(state: AgentPipeline) -> AgentPipeline:
 
     finally:
         db.close()
+
+    asyncio.run(manager.send_status(meeting_id, "done"))
 
     return state
