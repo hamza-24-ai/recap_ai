@@ -25,7 +25,7 @@ def extract_action_items(state: AgentPipeline) -> AgentPipeline:
 
 
     meeting_id = state["meeting_id"]
-    asyncio.run(manager.send_status(meeting_id, "extracting_action_items"))
+    manager.send_status_sync(meeting_id, "extracting_action_items")
 
     
     cleaned_text = state["cleaned_transcript"]

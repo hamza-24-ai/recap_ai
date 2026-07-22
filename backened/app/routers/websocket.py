@@ -7,10 +7,13 @@ router = APIRouter()
 @router.websocket("/ws/meeting-status/{meeting_id}")
 async def meeting_status_socket(websocket: WebSocket, meeting_id: int):
     await manager.connect(meeting_id, websocket)
+    print(f"WebSocket connected for meeting {meeting_id}")
     try:
         while True:
-            # Connection ko khula rakhne ke liye — hum kuch receive nahi kar rahe abhi,
-            # bas connection alive rakhne ke liye wait kar rahe hain
             await websocket.receive_text()
     except WebSocketDisconnect:
+        print(f"WebSocket disconnected (normal) for meeting {meeting_id}")
+        manager.disconnect(meeting_id)
+    except Exception as e:
+        print(f"WebSocket error for meeting {meeting_id}: {e}")
         manager.disconnect(meeting_id)

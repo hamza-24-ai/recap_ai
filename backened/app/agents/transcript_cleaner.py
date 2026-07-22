@@ -23,8 +23,9 @@ def clean_transcript(state : AgentPipeline) -> AgentPipeline:
 
     meeting_id = state["meeting_id"]
 
-    # Status bhejo (sync function ke andar async call — asyncio.run use karo)
-    asyncio.run(manager.send_status(meeting_id, "cleaning_transcript"))
+    # Status bhejo — send_status_sync khud background thread se main loop par
+    # coroutine ko thread-safe schedule kar deta hai.
+    manager.send_status_sync(meeting_id, "cleaning_transcript")
 
     raw = state["raw_transcript"]
 

@@ -27,7 +27,7 @@ def get_action_items_for_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    query = db.query(ActionItem).join(Meeting).filter(Meeting.project_id == project_id)
+    query = db.query(ActionItem).join(Meeting, ActionItem.meeting_id == Meeting.id).filter(Meeting.project_id == project_id)
 
     if status:
         query = query.filter(ActionItem.status == status)
@@ -44,9 +44,16 @@ def update_action_item_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    action_item = db.query(ActionItem).join(Meeting).join(Project).filter(
-        ActionItem.id == action_item_id, Project.user_id == current_user.id
-    ).first()
+    action_item = (
+        db.query(ActionItem)
+        .join(Meeting, ActionItem.meeting_id == Meeting.id)
+        .join(Project, Meeting.project_id == Project.id)
+        .filter(
+            ActionItem.id == action_item_id,
+            Project.user_id == current_user.id,
+        )
+        .first()
+    )
     if not action_item:
         raise HTTPException(status_code=404, detail="Action item not found")
 
@@ -54,7 +61,6 @@ def update_action_item_status(
     db.commit()
     db.refresh(action_item)
     return action_item
-
 
 
 
@@ -66,8 +72,8 @@ def get_action_item_citation(
 ):
     action_item = (
         db.query(ActionItem)
-        .join(Meeting)
-        .join(Project)
+        .join(Meeting, ActionItem.meeting_id == Meeting.id)
+        .join(Project, Meeting.project_id == Project.id)
         .filter(
             ActionItem.id == action_item_id,
             Project.user_id == current_user.id,

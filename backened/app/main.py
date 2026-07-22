@@ -34,6 +34,18 @@ app.include_router(websocket.router)
 # Generate Tables in Supabase
 Base.metadata.create_all(bind=engine)
 
+# Link with frontened by cors method
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 def root():
     return {

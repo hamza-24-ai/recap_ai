@@ -13,7 +13,7 @@ import asyncio
 def save_to_memory(state: AgentPipeline) -> AgentPipeline:
 
     meeting_id = state["meeting_id"]
-    asyncio.run(manager.send_status(meeting_id, "saving_data"))
+    manager.send_status_sync(meeting_id, "saving_data")
     
     db = Session_Local()
 

@@ -29,7 +29,7 @@ llm = ChatGroq(
 def check_followups(state: AgentPipeline) -> AgentPipeline:
 
     meeting_id = state["meeting_id"]
-    asyncio.run(manager.send_status(meeting_id, "checking_followups"))
+    manager.send_status_sync(meeting_id, "checking_followups")
 
     db = Session_Local()
 
@@ -46,9 +46,20 @@ def check_followups(state: AgentPipeline) -> AgentPipeline:
 
         # 2. Isi project ke sare "pending" action items nikalo
         #    (current meeting ko chhod kar — kyunke wo abhi khud create hui hai)
+        # pending_items = (
+        #     db.query(ActionItem)
+        #     .join(Meeting)
+        #     .filter(
+        #         Meeting.project_id == project_id,
+        #         ActionItem.status == "pending",
+        #         ActionItem.meeting_id != meeting_id,
+        #     )
+        #     .all()
+        # )
+
         pending_items = (
             db.query(ActionItem)
-            .join(Meeting)
+            .join(Meeting, ActionItem.meeting_id == Meeting.id)   # explicit join condition
             .filter(
                 Meeting.project_id == project_id,
                 ActionItem.status == "pending",
@@ -125,6 +136,6 @@ def check_followups(state: AgentPipeline) -> AgentPipeline:
     finally:
         db.close()
 
-    asyncio.run(manager.send_status(meeting_id, "done"))
+    manager.send_status_sync(meeting_id, "done")
 
     return state
